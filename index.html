@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAT Vocabulary Lightning Round</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+        
+        .game-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        
+        .game-header {
+            margin-bottom: 30px;
+        }
+        
+        .title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+        
+        .streak {
+            color: #FFD700;
+            text-shadow: 0 0 10px #FFD700;
+        }
+        
+        .word-display {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 30px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .option {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid transparent;
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        .option:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .option.correct {
+            background: #4CAF50;
+            border-color: #45a049;
+        }
+        
+        .option.incorrect {
+            background: #f44336;
+            border-color: #da190b;
+        }
+        
+        .timer-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .timer-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb);
+            width: 100%;
+            transition: width 0.1s linear;
+        }
+        
+        .game-over {
+            display: none;
+        }
+        
+        .final-score {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #FFD700;
+            margin: 20px 0;
+        }
+        
+        .achievements {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .achievement {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            margin: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .level-indicator {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #FFD700;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1 class="title">⚡ SAT Vocab Lightning ⚡</h1>
+            <div class="level-indicator" id="levelIndicator">Level 1: Novice Scholar</div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat">
+                <span class="stat-value" id="score">0</span>
+                <div class="stat-label">Score</div>
+            </div>
+            <div class="stat">
+                <span class="stat-value streak" id="streak">0</span>
+                <div class="stat-label">Streak</div>
+            </div>
+            <div class="stat">
+                <span class="stat-value" id="correct">0</span>
+                <div class="stat-label">Correct</div>
+            </div>
+            <div class="stat">
+                <span class="stat-value" id="timeLeft">10</span>
+                <div class="stat-label">Time</div>
+            </div>
+        </div>
+        
+        <div class="timer-bar">
+            <div class="timer-fill" id="timerFill"></div>
+        </div>
+        
+        <div id="gameArea">
+            <div class="word-display" id="wordDisplay">Click Start to Begin!</div>
+            <div class="options" id="options"></div>
+            <button class="btn" id="startBtn" onclick="startGame()">Start Game</button>
+        </div>
+        
+        <div id="gameOver" class="game-over">
+            <h2>Game Over!</h2>
+            <div class="final-score" id="finalScore">0</div>
+            <div class="achievements" id="achievements"></div>
+            <button class="btn" onclick="startGame()">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        // Comprehensive SAT vocabulary database
+        const vocabulary = [
+            // Level 1: Common but important SAT words
+            { word: "ABUNDANT", definition: "existing in large quantities; plentiful", distractors: ["scarce and limited", "moderately available", "extremely rare"], level: 1 },
+            { word: "ADVOCATE", definition: "to publicly support or recommend", distractors: ["to strongly oppose", "to remain neutral about", "to secretly undermine"], level: 1 },
+            { word: "BENEVOLENT", definition: "well-meaning and kindly", distractors: ["hostile and aggressive", "indifferent and cold", "suspicious and wary"], level: 1 },
+            { word: "CANDID", definition: "truthful and straightforward; frank", distractors: ["deceptive and misleading", "overly diplomatic", "vague and evasive"], level: 1 },
+            { word: "DILIGENT", definition: "showing careful and persistent effort", distractors: ["lazy and careless", "working only when watched", "easily distracted"], level: 1 },
+            { word: "ELOQUENT", definition: "fluent and persuasive in speaking or writing", distractors: ["stammering and unclear", "silent and withdrawn", "boring and monotonous"], level: 1 },
+            { word: "FRUGAL", definition: "sparing or economical with money or resources", distractors: ["wasteful and extravagant", "generous to a fault", "indifferent to cost"], level: 1 },
+            { word: "GREGARIOUS", definition: "fond of the company of others; sociable", distractors: ["preferring solitude", "avoiding social contact", "hostile to strangers"], level: 1 },
+            { word: "HOSPITABLE", definition: "friendly and welcoming to guests", distractors: ["rude to visitors", "ignoring newcomers", "suspicious of strangers"], level: 1 },
+            { word: "INDIGNANT", definition: "feeling anger at unfair treatment", distractors: ["pleased and satisfied", "completely indifferent", "mildly amused"], level: 1 },
+            
+            // Level 2: Moderate difficulty
+            { word: "AMIABLE", definition: "having a friendly and pleasant manner", distractors: ["hostile and unfriendly", "indifferent and cold", "suspicious and guarded"], level: 2 },
+            { word: "BREVITY", definition: "concise and clearly expressed", distractors: ["lengthy and wordy", "confusing and unclear", "overly detailed"], level: 2 },
+            { word: "CLEMENCY", definition: "mercy; lenient treatment", distractors: ["harsh punishment", "strict enforcement", "complete indifference"], level: 2 },
+            { word: "DEFUNCT", definition: "no longer existing or functioning", distractors: ["newly established", "operating efficiently", "expanding rapidly"], level: 2 },
+            { word: "EMULATE", definition: "match or surpass by imitation", distractors: ["completely ignore", "strongly oppose", "carelessly copy"], level: 2 },
+            { word: "FORTITUDE", definition: "courage in pain or adversity", distractors: ["cowardice when challenged", "indifference to problems", "panic under pressure"], level: 2 },
+            { word: "GRATUITOUS", definition: "uncalled for; lacking good reason", distractors: ["completely necessary", "well justified", "carefully planned"], level: 2 },
+            { word: "HAMPER", definition: "hinder or impede the movement or progress of", distractors: ["significantly accelerate", "carefully assist", "completely ignore"], level: 2 },
+            { word: "IMMUTABLE", definition: "unchanging over time or unable to be changed", distractors: ["constantly changing", "easily modified", "temporarily stable"], level: 2 },
+            { word: "JUDICIOUS", definition: "having good judgment or sense", distractors: ["making poor decisions", "acting without thinking", "being overly impulsive"], level: 2 },
+            
+            // Level 3: Advanced words
+            { word: "ABSTEMIOUS", definition: "restraining oneself from indulging in something", distractors: ["indulging excessively", "showing no self-control", "being moderately permissive"], level: 3 },
+            { word: "BOMBASTIC", definition: "high-sounding but with little meaning", distractors: ["simple and direct", "meaningful and profound", "quietly understated"], level: 3 },
+            { word: "COPIOUS", definition: "abundant in supply or quantity", distractors: ["extremely limited", "moderately available", "completely absent"], level: 3 },
+            { word: "DELETERIOUS", definition: "causing harm or damage", distractors: ["providing great benefit", "having no effect", "offering mild improvement"], level: 3 },
+            { word: "EPHEMERAL", definition: "lasting for a very short time", distractors: ["permanent and lasting", "moderately durable", "extending indefinitely"], level: 3 },
+            { word: "FRACTIOUS", definition: "irritable and quarrelsome", distractors: ["calm and peaceful", "cooperative and helpful", "quietly agreeable"], level: 3 },
+            { word: "GARRULOUS", definition: "excessively talkative on trivial matters", distractors: ["preferring complete silence", "speaking only when necessary", "communicating very clearly"], level: 3 },
+            { word: "HERETICAL", definition: "believing in or practicing heresy", distractors: ["completely orthodox", "following tradition exactly", "accepting all teachings"], level: 3 },
+            { word: "ICONOCLASTIC", definition: "attacking cherished beliefs or institutions", distractors: ["supporting traditional values", "avoiding all controversy", "following established norms"], level: 3 },
+            { word: "JUXTAPOSE", definition: "place side by side for contrasting effect", distractors: ["keep completely separate", "mix together thoroughly", "arrange in random order"], level: 3 },
+            
+            // Additional Level 1 words
+            { word: "KINDLE", definition: "light or set on fire; arouse interest", distractors: ["completely extinguish", "show no interest in", "actively discourage"], level: 1 },
+            { word: "LUCID", definition: "expressed clearly; easy to understand", distractors: ["confusing and unclear", "deliberately obscure", "impossible to follow"], level: 1 },
+            { word: "METICULOUS", definition: "showing great attention to detail", distractors: ["careless and sloppy", "paying little attention", "working very quickly"], level: 1 },
+            { word: "NOVEL", definition: "new or unusual in an interesting way", distractors: ["completely ordinary", "exactly as expected", "boring and predictable"], level: 1 },
+            { word: "OPULENT", definition: "ostentatiously rich and luxurious", distractors: ["extremely poor", "modestly simple", "carefully economical"], level: 1 },
+            { word: "PRUDENT", definition: "acting with care and thought for the future", distractors: ["acting without thinking", "being extremely reckless", "ignoring all consequences"], level: 1 },
+            { word: "QUELL", definition: "put an end to by force", distractors: ["encourage to continue", "allow to flourish", "remain neutral about"], level: 1 },
+            { word: "ROBUST", definition: "strong and healthy; vigorous", distractors: ["weak and fragile", "barely functioning", "completely inactive"], level: 1 },
+            { word: "SERENE", definition: "calm, peaceful, and untroubled", distractors: ["highly agitated", "extremely anxious", "constantly worried"], level: 1 },
+            { word: "TENACIOUS", definition: "tending to keep a firm hold; persistent", distractors: ["giving up easily", "lacking determination", "being completely flexible"], level: 1 },
+            
+            // Additional Level 2 words
+            { word: "ALLEVIATE", definition: "make less severe", distractors: ["make much worse", "leave completely unchanged", "increase significantly"], level: 2 },
+            { word: "BELLIGERENT", definition: "hostile and aggressive", distractors: ["peaceful and calm", "friendly and welcoming", "completely neutral"], level: 2 },
+            { word: "CONVOLUTED", definition: "extremely complex and difficult to follow", distractors: ["simple and straightforward", "easy to understand", "clearly organized"], level: 2 },
+            { word: "DISPARATE", definition: "essentially different in kind", distractors: ["exactly identical", "very similar", "closely related"], level: 2 },
+            { word: "ENIGMATIC", definition: "difficult to interpret or understand", distractors: ["perfectly clear", "easy to explain", "obviously simple"], level: 2 },
+            { word: "FURTIVE", definition: "attempting to avoid notice; secretive", distractors: ["completely open", "seeking attention", "acting very boldly"], level: 2 },
+            { word: "GREGARIOUS", definition: "fond of company; sociable", distractors: ["preferring solitude", "avoiding others", "being antisocial"], level: 2 },
+            { word: "HACKNEYED", definition: "overused and lacking originality", distractors: ["completely original", "fresh and new", "innovative and creative"], level: 2 },
+            { word: "INCORRIGIBLE", definition: "not able to be corrected or reformed", distractors: ["easily improved", "highly teachable", "quickly reformed"], level: 2 },
+            { word: "JEOPARDIZE", definition: "put into a dangerous situation", distractors: ["make completely safe", "provide protection for", "offer security to"], level: 2 },
+            
+            // Additional Level 3 words
+            { word: "ARCHAIC", definition: "very old or old-fashioned", distractors: ["completely modern", "cutting-edge new", "recently developed"], level: 3 },
+            { word: "BEGUILE", definition: "charm or enchant, often deceptively", distractors: ["repel and disgust", "bore completely", "ignore entirely"], level: 3 },
+            { word: "CIRCUMSPECT", definition: "wary and unwilling to take risks", distractors: ["extremely reckless", "taking foolish chances", "acting without caution"], level: 3 },
+            { word: "DIDACTIC", definition: "intended to teach or moralize", distractors: ["purely entertaining", "avoiding all lessons", "discouraging learning"], level: 3 },
+            { word: "ESOTERIC", definition: "understood by few; specialized", distractors: ["known by everyone", "commonly understood", "easily accessible"], level: 3 },
+            { word: "FASTIDIOUS", definition: "very attentive to detail", distractors: ["completely careless", "paying no attention", "working very sloppily"], level: 3 },
+            { word: "GAUNT", definition: "lean and haggard in appearance", distractors: ["plump and healthy", "robust and strong", "well-fed and content"], level: 3 },
+            { word: "HACKNEYED", definition: "lacking originality; overused", distractors: ["completely original", "fresh and innovative", "creatively unique"], level: 3 },
+            { word: "INDELIBLE", definition: "making marks that cannot be removed", distractors: ["easily erased", "temporarily marked", "quickly fading"], level: 3 },
+            { word: "JOCULAR", definition: "fond of joking; humorous", distractors: ["extremely serious", "never smiling", "completely humorless"], level: 3 },
+            
+            // More vocabulary to reach 100
+            { word: "LANGUID", definition: "displaying little energy; slow", distractors: ["extremely energetic", "moving very quickly", "highly motivated"], level: 2 },
+            { word: "MAGNANIMOUS", definition: "generous in forgiving; noble", distractors: ["petty and vengeful", "holding grudges", "refusing to forgive"], level: 2 },
+            { word: "NONCHALANT", definition: "appearing calm and relaxed", distractors: ["extremely anxious", "highly agitated", "very worried"], level: 2 },
+            { word: "OSTENTATIOUS", definition: "characterized by showy display", distractors: ["modest and humble", "understated and simple", "avoiding attention"], level: 2 },
+            { word: "PARSIMONIOUS", definition: "extremely frugal; stingy", distractors: ["extremely generous", "spending freely", "giving lavishly"], level: 3 },
+            { word: "QUIXOTIC", definition: "foolishly impractical idealism", distractors: ["extremely practical", "completely realistic", "highly pragmatic"], level: 3 },
+            { word: "RECALCITRANT", definition: "stubbornly resistant to authority", distractors: ["completely obedient", "eagerly compliant", "willingly cooperative"], level: 3 },
+            { word: "SAGACIOUS", definition: "having good judgment; wise", distractors: ["showing poor judgment", "acting very foolishly", "making bad decisions"], level: 2 },
+            { word: "TACITURN", definition: "reserved in speech; saying little", distractors: ["extremely talkative", "speaking constantly", "never staying quiet"], level: 2 },
+            { word: "UBIQUITOUS", definition: "present everywhere at once", distractors: ["extremely rare", "found nowhere", "completely absent"], level: 2 },
+            { word: "VICARIOUS", definition: "experienced through someone else", distractors: ["personally experienced", "directly involved in", "actively participating"], level: 2 },
+            { word: "WARY", definition: "feeling cautious about dangers", distractors: ["completely trusting", "showing no caution", "being very reckless"], level: 1 },
+            { word: "XENOPHOBIC", definition: "having fear of foreigners", distractors: ["welcoming all strangers", "loving other cultures", "embracing diversity"], level: 3 },
+            { word: "YEARN", definition: "have an intense longing for", distractors: ["feel no desire for", "actively avoid wanting", "completely reject"], level: 1 },
+            { word: "ZEALOUS", definition: "showing fervor for a cause", distractors: ["completely apathetic", "showing no interest", "remaining indifferent"], level: 2 }
+        ];
+
+        // Game state
+        let currentWord = null;
+        let score = 0;
+        let streak = 0;
+        let bestStreak = 0;
+        let correctAnswers = 0;
+        let totalAnswers = 0;
+        let timeLeft = 10;
+        let gameActive = false;
+        let timer = null;
+        let currentLevel = 1;
+        let achievements = [];
+
+        // Achievement system
+        const achievementList = [
+            { id: 'first_correct', name: '🎯 First Blood', description: 'Get your first answer correct', condition: () => correctAnswers >= 1 },
+            { id: 'streak_5', name: '🔥 Hot Streak', description: 'Get 5 answers correct in a row', condition: () => streak >= 5 },
+            { id: 'streak_10', name: '⚡ Lightning Round', description: 'Get 10 answers correct in a row', condition: () => streak >= 10 },
+            { id: 'speed_demon', name: '💨 Speed Demon', description: 'Answer 10 questions in under 5 seconds each', condition: () => false }, // Complex condition
+            { id: 'perfectionist', name: '💎 Perfectionist', description: 'Complete a round with 100% accuracy', condition: () => totalAnswers >= 10 && correctAnswers === totalAnswers },
+            { id: 'scholar', name: '🎓 Scholar', description: 'Get 50 answers correct', condition: () => correctAnswers >= 50 },
+            { id: 'level_master', name: '👑 Level Master', description: 'Reach Level 3', condition: () => currentLevel >= 3 }
+        ];
+
+        function getRandomWord() {
+            // Filter words by current level
+            const levelWords = vocabulary.filter(w => w.level <= currentLevel);
+            return levelWords[Math.floor(Math.random() * levelWords.length)];
+        }
+
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function displayQuestion() {
+            currentWord = getRandomWord();
+            document.getElementById('wordDisplay').textContent = currentWord.word;
+            
+            // Create answer options
+            const options = [currentWord.definition, ...currentWord.distractors];
+            const shuffledOptions = shuffleArray(options);
+            
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            
+            shuffledOptions.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'option';
+                button.textContent = option;
+                button.onclick = () => selectAnswer(option, button);
+                optionsContainer.appendChild(button);
+            });
+            
+            startTimer();
+        }
+
+        function selectAnswer(selectedAnswer, buttonElement) {
+            if (!gameActive) return;
+            
+            clearInterval(timer);
+            const isCorrect = selectedAnswer === currentWord.definition;
+            totalAnswers++;
+            
+            // Visual feedback
+            const allOptions = document.querySelectorAll('.option');
+            allOptions.forEach(option => {
+                option.style.pointerEvents = 'none';
+                if (option.textContent === currentWord.definition) {
+                    option.classList.add('correct');
+                } else if (option === buttonElement && !isCorrect) {
+                    option.classList.add('incorrect');
+                }
+            });
+            
+            if (isCorrect) {
+                correctAnswers++;
+                streak++;
+                bestStreak = Math.max(bestStreak, streak);
+                
+                // Calculate score with multipliers
+                let points = 10;
+                if (streak >= 10) points *= 5;
+                else if (streak >= 5) points *= 3;
+                else if (streak >= 3) points *= 2;
+                
+                // Level bonus
+                points *= currentLevel;
+                
+                score += points;
+                
+                // Add pulse effect to streak
+                document.getElementById('streak').parentElement.classList.add('pulse');
+                setTimeout(() => {
+                    document.getElementById('streak').parentElement.classList.remove('pulse');
+                }, 500);
+                
+            } else {
+                streak = 0;
+            }
+            
+            updateDisplay();
+            checkAchievements();
+            checkLevelUp();
+            
+            setTimeout(() => {
+                if (gameActive) {
+                    displayQuestion();
+                }
+            }, 1500);
+        }
+
+        function startTimer() {
+            timeLeft = 10;
+            const timerFill = document.getElementById('timerFill');
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                const percentage = (timeLeft / 10) * 100;
+                timerFill.style.width = percentage + '%';
+                document.getElementById('timeLeft').textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    // Time's up - treat as wrong answer
+                    selectAnswer('', null);
+                }
+            }, 1000);
+        }
+
+        function updateDisplay() {
+            document.getElementById('score').textContent = score.toLocaleString();
+            document.getElementById('streak').textContent = streak;
+            document.getElementById('correct').textContent = correctAnswers;
+        }
+
+        function checkLevelUp() {
+            let newLevel = 1;
+            if (score >= 1000) newLevel = 2;
+            if (score >= 2500) newLevel = 3;
+            if (score >= 5000) newLevel = 4;
+            
+            if (newLevel > currentLevel) {
+                currentLevel = newLevel;
+                const levelNames = ['', 'Novice Scholar', 'Word Warrior', 'Vocab Virtuoso', 'SAT Master'];
+                document.getElementById('levelIndicator').textContent = `Level ${currentLevel}: ${levelNames[currentLevel]}`;
+                
+                // Show level up notification
+                showNotification(`🎉 Level Up! You are now a ${levelNames[currentLevel]}!`);
+            }
+        }
+
+        function checkAchievements() {
+            achievementList.forEach(achievement => {
+                if (!achievements.includes(achievement.id) && achievement.condition()) {
+                    achievements.push(achievement.id);
+                    showNotification(`🏆 Achievement Unlocked: ${achievement.name}`);
+                }
+            });
+        }
+
+        function showNotification(message) {
+            // Simple notification - could be enhanced with better UI
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #4CAF50;
+                color: white;
+                padding: 15px 25px;
+                border-radius: 25px;
+                z-index: 1000;
+                animation: slideIn 0.5s ease-out;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 3000);
+        }
+
+        function startGame() {
+            gameActive = true;
+            score = 0;
+            streak = 0;
+            correctAnswers = 0;
+            totalAnswers = 0;
+            timeLeft = 10;
+            
+            document.getElementById('gameArea').style.display = 'block';
+            document.getElementById('gameOver').style.display = 'none';
+            document.getElementById('startBtn').style.display = 'none';
+            
+            updateDisplay();
+            displayQuestion();
+        }
+
+        function endGame() {
+            gameActive = false;
+            clearInterval(timer);
+            
+            document.getElementById('gameArea').style.display = 'none';
+            document.getElementById('gameOver').style.display = 'block';
+            document.getElementById('finalScore').textContent = score.toLocaleString();
+            
+            // Display achievements
+            const achievementsContainer = document.getElementById('achievements');
+            achievementsContainer.innerHTML = '<h3>Achievements Earned:</h3>';
+            
+            if (achievements.length === 0) {
+                achievementsContainer.innerHTML += '<p>No achievements yet - keep trying!</p>';
+            } else {
+                achievements.forEach(achievementId => {
+                    const achievement = achievementList.find(a => a.id === achievementId);
+                    if (achievement) {
+                        const badge = document.createElement('div');
+                        badge.className = 'achievement';
+                        badge.textContent = achievement.name;
+                        badge.title = achievement.description;
+                        achievementsContainer.appendChild(badge);
+                    }
+                });
+            }
+        }
+
+        // Add CSS animation keyframes
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize display
+        updateDisplay();
+    </script>
+</body>
+</html>
