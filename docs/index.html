@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amrita's SAT Vocabulary Lightning Round</title>
+    <title>Lightning SAT Vocab Game</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
     <style>
         * {
             margin: 0;
@@ -133,6 +134,52 @@
             transition: width 0.1s linear;
         }
         
+        .email-capture {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .email-capture h2 {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .email-capture p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            opacity: 0.95;
+        }
+        
+        .email-form {
+            margin: 30px 0;
+        }
+        
+        .email-form input {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 15px 25px;
+            font-size: 1.1rem;
+            color: white;
+            width: 350px;
+            max-width: 90%;
+            margin-bottom: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .email-form input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .email-form input:focus {
+            outline: none;
+            border-color: #FFD700;
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+        
         .game-over {
             display: none;
         }
@@ -178,11 +225,32 @@
             transform: translateY(-3px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
         }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
         
         .level-indicator {
             font-size: 1.2rem;
             margin-bottom: 15px;
             color: #FFD700;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
         
         @keyframes pulse {
@@ -196,21 +264,15 @@
         }
 
         @keyframes slideIn {
-            from { 
-                transform: translateX(100%); 
-                opacity: 0; 
-            }
-            to { 
-                transform: translateX(0); 
-                opacity: 1; 
-            }
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
     </style>
 </head>
 <body>
     <div class="game-container">
         <div class="game-header">
-            <h1 class="title">⚡ Amrita's SAT Vocab Lightning ⚡</h1>
+            <h1 class="title">⚡ Lightning SAT Vocab Game ⚡</h1>
             <div class="level-indicator" id="levelIndicator">Level 1: Novice Scholar</div>
         </div>
         
@@ -237,7 +299,16 @@
             <div class="timer-fill" id="timerFill"></div>
         </div>
         
-        <div id="gameArea">
+        <div id="emailCapture" class="email-capture">
+            <h2>Welcome! ⚡</h2>
+            <p>Enter your email to receive updates</p>
+            <div class="email-form">
+                <input type="email" id="emailInput" placeholder="your.email@example.com" required>
+                <button class="btn" id="emailBtn" onclick="submitEmail()">Start Playing!</button>
+            </div>
+        </div>
+
+        <div id="gameArea" style="display: none;">
             <div class="word-display" id="wordDisplay">Click Start to Begin!</div>
             <div class="options" id="options"></div>
             <button class="btn" id="startBtn" onclick="startGame()">Start Game</button>
@@ -252,6 +323,10 @@
     </div>
 
     <script>
+        // ⚠️ IMPORTANT: Replace this URL with your Google Apps Script Web App URL
+        // Get it from: Apps Script → Deploy → New deployment → Web app
+        // It should look like: https://script.google.com/macros/s/AKfycby.../exec
+        const GOOGLE_SCRIPT_URL ='https://script.google.com/macros/s/AKfycbwoVA3wzDZTt0ncWCMT10ISRYkGhhsucz1Ge5pVhJIW-B2UDvxZg-TE6TXdychPw4ot/exec';
         // Comprehensive SAT vocabulary database
         const vocabulary = [
             // Level 1: Common but important SAT words
@@ -346,6 +421,7 @@
         let timer = null;
         let currentLevel = 1;
         let achievements = [];
+        let userEmail = '';
         
         // Smart word tracking - tracks correct answers per word
         let wordHistory = {};
@@ -361,6 +437,58 @@
             { id: 'scholar', name: '🎓 Scholar', description: 'Get 50 answers correct', condition: () => correctAnswers >= 50 },
             { id: 'level_master', name: '👑 Level Master', description: 'Reach Level 3', condition: () => currentLevel >= 3 }
         ];
+
+        function submitEmail() {
+            const emailInput = document.getElementById('emailInput');
+            const emailBtn = document.getElementById('emailBtn');
+            const email = emailInput.value.trim();
+            
+            // Validate email
+            if (!email || !isValidEmail(email)) {
+                showNotification('❌ Please enter a valid email address');
+                return;
+            }
+            
+            userEmail = email;
+            
+            // Disable button during submission
+            emailBtn.disabled = true;
+            emailBtn.innerHTML = '<span class="spinner"></span>Submitting...';
+            
+            // Send email to Google Apps Script
+            if (GOOGLE_SCRIPT_URL !== 'YOUR_GOOGLE_SCRIPT_URL_HERE') {
+                fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        score: 0,
+                        timestamp: new Date().toISOString()
+                    })
+                }).then(() => {
+                    console.log('Email submitted successfully');
+                }).catch(err => {
+                    console.error('Error submitting email:', err);
+                });
+            } else {
+                console.log('Google Script URL not configured yet');
+            }
+            
+            // Hide email capture and show game
+            setTimeout(() => {
+                document.getElementById('emailCapture').style.display = 'none';
+                document.getElementById('gameArea').style.display = 'block';
+                showNotification(`🎉 Welcome! Let's boost your SAT vocabulary!`);
+            }, 500);
+        }
+
+        function isValidEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
 
         function getRandomWord() {
             // Filter words by current level
@@ -571,6 +699,28 @@
         function endGame() {
             gameActive = false;
             clearInterval(timer);
+            
+            // Send final score to Google Apps Script
+            if (userEmail && GOOGLE_SCRIPT_URL !== 'YOUR_GOOGLE_SCRIPT_URL_HERE') {
+                fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: userEmail,
+                        score: score,
+                        correct: correctAnswers,
+                        total: totalAnswers,
+                        bestStreak: bestStreak,
+                        level: currentLevel,
+                        timestamp: new Date().toISOString()
+                    })
+                }).catch(err => {
+                    console.error('Error submitting final score:', err);
+                });
+            }
             
             document.getElementById('gameArea').style.display = 'none';
             document.getElementById('gameOver').style.display = 'block';
