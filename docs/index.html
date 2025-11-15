@@ -666,16 +666,17 @@
             // Clear container completely
             optionsContainer.innerHTML = '';
 
-            // Force browser reflow to clear cached styles (fixes mobile highlighting bug)
-            void optionsContainer.offsetHeight;
-
-            // Create new buttons
-            shuffledOptions.forEach(option => {
-                const button = document.createElement('button');
-                button.className = 'option';
-                button.textContent = option;
-                button.onclick = () => selectAnswer(option, button);
-                optionsContainer.appendChild(button);
+            // Use requestAnimationFrame to ensure button creation happens in next frame
+            // This completely separates the clear operation from creation (fixes mobile caching)
+            requestAnimationFrame(() => {
+                // Create new buttons in a fresh rendering frame
+                shuffledOptions.forEach(option => {
+                    const button = document.createElement('button');
+                    button.className = 'option';
+                    button.textContent = option;
+                    button.onclick = () => selectAnswer(option, button);
+                    optionsContainer.appendChild(button);
+                });
             });
 
             startTimer();
