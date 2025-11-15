@@ -650,29 +650,26 @@
         function displayQuestion() {
             currentWord = getRandomWord();
             document.getElementById('wordDisplay').textContent = currentWord.word;
-            
+
             // Add to recent words list
             recentWords.push(currentWord.word);
             if (recentWords.length > MAX_RECENT_WORDS) {
                 recentWords.shift();
             }
-            
+
             // Create answer options
             const options = [currentWord.definition, ...currentWord.distractors];
             const shuffledOptions = shuffleArray(options);
-            
+
             const optionsContainer = document.getElementById('options');
-            
-            // Clear all previous highlighting and reset options
-            const existingOptions = optionsContainer.querySelectorAll('.option');
-            existingOptions.forEach(option => {
-                option.classList.remove('correct', 'incorrect');
-                option.style.pointerEvents = '';
-            });
-            
-            // Completely clear container
+
+            // Clear container completely
             optionsContainer.innerHTML = '';
-            
+
+            // Force browser reflow to clear cached styles (fixes mobile highlighting bug)
+            void optionsContainer.offsetHeight;
+
+            // Create new buttons
             shuffledOptions.forEach(option => {
                 const button = document.createElement('button');
                 button.className = 'option';
@@ -680,7 +677,7 @@
                 button.onclick = () => selectAnswer(option, button);
                 optionsContainer.appendChild(button);
             });
-            
+
             startTimer();
         }
 
