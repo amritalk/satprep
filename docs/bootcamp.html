@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAT Boot Camp with Amrita - Lightning SAT Vocab Game</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: #FAF8EF;
+            color: #776E65;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            background: #EDE0C8;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+            box-shadow: 0 8px 20px rgba(119, 110, 101, 0.1);
+            border: 1px solid rgba(119, 110, 101, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #776E65;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        .nav-button {
+            background: #F59563;
+            color: #776E65;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 8px rgba(119, 110, 101, 0.2);
+        }
+
+        .nav-button:hover {
+            background: #E8854E;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(119, 110, 101, 0.3);
+        }
+
+        .content {
+            color: #776E65;
+        }
+
+        h1, h2, h3 {
+            color: #776E65;
+            margin-bottom: 20px;
+            margin-top: 30px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-top: 0;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+        }
+
+        p {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .flyer {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            border-radius: 15px;
+            margin: 0 auto 30px auto;
+            box-shadow: 0 4px 8px rgba(119, 110, 101, 0.2);
+        }
+
+        .highlight-box {
+            background: #EEE4DA;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            box-shadow: 0 4px 8px rgba(119, 110, 101, 0.1);
+        }
+
+        .highlight-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .cta-section {
+            background: #ECE0C8;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+            border: 2px solid rgba(245, 149, 99, 0.3);
+        }
+
+        .cta-button {
+            background: #EDC850;
+            color: #776E65;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 15px;
+            box-shadow: 0 4px 8px rgba(119, 110, 101, 0.2);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .cta-button:hover {
+            background: #E6B800;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(119, 110, 101, 0.3);
+        }
+
+        .details {
+            background: #EEE4DA;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            box-shadow: 0 4px 8px rgba(119, 110, 101, 0.1);
+        }
+
+        .details p {
+            margin-bottom: 10px;
+        }
+
+        .stat-highlight {
+            background: #F59563;
+            color: #776E65;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">⚡ SAT Boot Camp with Amrita ⚡</h1>
+            <p class="subtitle">Final push — before the SAT</p>
+        </div>
+
+        <div class="content">
+            <div class="cta-section">
+                <h3>Spots are limited — reserve your seat</h3>
+                <p>Payment is handled securely through Stripe. Your seat is confirmed once payment goes through.</p>
+                <a href="https://buy.stripe.com/8x23cvdDb7R2fZG9Docwg00" class="cta-button"><strong>Reserve your seat — $150 →</strong></a>
+            </div>
+
+            <img src="bootcamp/bootcamp.jpg" alt="SAT Boot Camp with Amrita — Sunday, August 16, 2–4:30 PM, Tenafly, NJ. $150 per person, small group setting, snacks included." class="flyer">
+
+            <div class="details">
+                <p>📅 <strong>Sunday, August 16</strong> · 2:00–4:30 PM</p>
+                <p>📍 <strong>Tenafly, NJ</strong></p>
+                <p>💵 <span class="stat-highlight">$150</span> per person · small group setting · snacks included</p>
+            </div>
+
+            <h2>What's Covered</h2>
+            <div class="highlight-box">
+                <p>• <strong>Breathing &amp; relaxation techniques</strong> to manage test-day nerves.</p>
+                <p>• <strong>Strategies for English</strong> — reading and writing techniques that save time.</p>
+                <p>• <strong>Tips &amp; Tricks for Math</strong> — the shortcuts that matter most in the final stretch.</p>
+                <p>• Taught by a <strong>rising senior at BCA</strong> who scored a <strong>1580</strong> on the SAT and created a test prep tool, <a href="index.html">satvocabgame.com</a>.</p>
+            </div>
+
+            <div style="text-align:center;">
+                <a href="index.html" class="nav-button" style="margin-top:20px;margin-bottom:0;">← Back to Game</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
